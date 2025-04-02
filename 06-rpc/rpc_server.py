@@ -47,15 +47,15 @@ class FibonacciRpcServer:
             req = RequestSchema(**request)
             
             if req.is_shutdown:
-                print(f"🔴 Shutdown initiated by {req.corr_id}")
+                print(f"Shutdown initiated by {req.corr_id}")
                 response = {
                     'data': None,
                     'message': f'Server stopped by {req.corr_id}'
                 }
                 self.should_stop = True
             else:
-                print(f"🔵 Processing fib({req.num})")
-                time.sleep(1000)
+                print(f"Processing fib({req.num})")
+                # time.sleep(1000)
                 response = {
                     'data': fib(req.num),
                     'message': 'Success'
@@ -76,19 +76,19 @@ class FibonacciRpcServer:
                 self.stop()
                 
         except Exception as e:
-            print(f"❌ Error: {e}")
+            print(f"Error: {e}")
             ch.basic_reject(delivery_tag=method.delivery_tag, requeue=False)
 
     def stop(self):
-        print("🛑 Cleaning up resources...")
+        print("Cleaning up resources...")
         if self.channel.is_open:
             self.channel.close()
         if self.connection.is_open:
             self.connection.close()
-        print("✅ Server shutdown complete")
+        print("Server shutdown complete")
 
     def start(self):
-        print(f"🚀 Server listening on '{self.routing_key}'")
+        print(f"Server listening on '{self.routing_key}'")
         try:
             self.channel.start_consuming()
         except KeyboardInterrupt:

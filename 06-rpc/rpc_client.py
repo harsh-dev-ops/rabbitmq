@@ -10,6 +10,7 @@ class RequestSchema:
     corr_id: str  # Now uses string type
     is_shutdown: bool = False
 
+
 class FibonacciRpcClient:
     def __init__(self):
         self.connection = pika.BlockingConnection(
@@ -52,10 +53,10 @@ class FibonacciRpcClient:
         
         return json.loads(self.response)
     
-    def shutdown_server(self, routing_key: str, custom_corr_id: str):
+    def shutdown_server(self, routing_key: str):
         shutdown_payload = RequestSchema(
             num=0,
-            corr_id=custom_corr_id,
+            corr_id=str(uuid.uuid4()),
             is_shutdown=True
         )
         return self.call(routing_key, shutdown_payload)
@@ -67,12 +68,12 @@ if __name__ == "__main__":
     client = FibonacciRpcClient()
     
     # Regular request
-    # response = client.call("server1", RequestSchema(
-    #     num=num,
-    #     corr_id=str(uuid.uuid4())
-    # ))
-    # print(f"📦 Response: {response['data']}")
+    response = client.call("server1", RequestSchema(
+        num=num,
+        corr_id=str(uuid.uuid4())
+    ))
+    print(f"Response: {response['data']}")
     
     # Shutdown request
-    shutdown_response = client.shutdown_server("server1", custom_shutdown_id)
-    print(f"🔌 Shutdown status: {shutdown_response['message']}")
+    shutdown_response = client.shutdown_server("server1")
+    print(f"Shutdown status: {shutdown_response['message']}")
